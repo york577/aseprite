@@ -8,9 +8,11 @@ jobs:
       matrix:
         os: [windows-latest]
         build_type: [Release]
+        enable_ui: [off]
         include:
           - os: windows-latest
             build_type: Release
+            enable_ui: off
     steps:
     - uses: actions/checkout@v3
       with:
@@ -19,7 +21,7 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1
       if: runner.os == 'Linux'
       with:
-        key: ${{ matrix.os }}
+        key: ${{ matrix.os }}-${{ matrix.enable_ui }}
     - uses: seanmiddleditch/gha-setup-ninja@master
     - uses: ilammy/msvc-dev-cmd@v1
       if: runner.os == 'Windows'
@@ -43,6 +45,7 @@ jobs:
         7z x skia.zip
         cmake -S . -B build -G Ninja \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DENABLE_UI=${{ matrix.enable_ui }} \
           -DENABLE_CCACHE=$enable_ccache \
           -DLAF_BACKEND=skia \
           -DSKIA_DIR=./skia \
